@@ -1,3 +1,6 @@
+$fa = 2;
+$fs= 0.2;
+
 tolerance = 0.1;
 epsilon = 0.01;
 
@@ -36,7 +39,7 @@ epsilon = 0.01;
 
 // Casing
 casing_width = 170;
-casing_walls_thickness = 3;
+casing_walls_thickness = 2.5;
 casing_honeycomb_diameter = 20;
 casing_honeycomb_thickness = 3;
 
@@ -44,29 +47,29 @@ casing_honeycomb_thickness = 3;
 filter_thickness = 10;
 
 // Grid
-grid_thickness = 3;
+grid_thickness = 2.5;
 grid_honeycomb_diameter = 20;
-grid_honeycomb_thickness = 3;
+grid_honeycomb_thickness = 2.5;
 
 // Fan
 fan_width = 140;
 fan_height = 27.5;
 fan_screw_spacing = 124.5;
 fan_wire_x= 107.8;
-fan_wire_plug_x= 10.8 + 2;
-fan_wire_plug_y= 6 + 2;
+fan_wire_cutting_width= 5;
+fan_wire_cutting_depth= 1.3;
 
 // Frame
-frame_walls_thickness = 3;
+frame_walls_thickness = 2.5;
 
 // Magnet
 magnet_diameter = 8;
 magnet_thickness = 1.7;
 
 // Screw
-screw_diameter = 3;
+screw_diameter = 4;
 screw_head_thickness = 1;
-screw_head_diameter = 8;
+screw_head_diameter = 10;
 
 // Computed
 frame_height = 2 * frame_walls_thickness + fan_height + 2 * tolerance;
@@ -159,14 +162,17 @@ module casing() {
                 }
             }
         }
-           translate([(casing_width + casing_hole_inner_width) / 4  , 0, casing_height / 2]) screw_hole();
-           translate([-(casing_width + casing_hole_inner_width) / 4  , 0, casing_height / 2]) screw_hole();
-           translate([0, (casing_width + casing_hole_inner_width) / 4, casing_height / 2]) screw_hole();
-           translate([0, -(casing_width + casing_hole_inner_width) / 4, casing_height / 2]) screw_hole();
-           translate([(casing_width + casing_hole_inner_width) / 4, (casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
-           translate([-(casing_width + casing_hole_inner_width) / 4, (casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
-           translate([(casing_width + casing_hole_inner_width) / 4, -(casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
-           translate([-(casing_width + casing_hole_inner_width) / 4, -(casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
+        translate([(casing_width + casing_hole_inner_width) / 4  , 0, casing_height / 2]) screw_hole();
+        translate([-(casing_width + casing_hole_inner_width) / 4  , 0, casing_height / 2]) screw_hole();
+        translate([0, (casing_width + casing_hole_inner_width) / 4, casing_height / 2]) screw_hole();
+        translate([0, -(casing_width + casing_hole_inner_width) / 4, casing_height / 2]) screw_hole();
+        translate([(casing_width + casing_hole_inner_width) / 4, (casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
+        translate([-(casing_width + casing_hole_inner_width) / 4, (casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
+        translate([(casing_width + casing_hole_inner_width) / 4, -(casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
+        translate([-(casing_width + casing_hole_inner_width) / 4,
+        -(casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
+        
+        translate([frame_hole_inner_width / 2 + casing_walls_thickness / 2, fan_wire_x / 2, casing_height / 2 + casing_walls_thickness / 2 - fan_wire_cutting_depth - tolerance]) cube([casing_width / 2, fan_wire_cutting_width, casing_walls_thickness], center= true);
     }
 }
 
@@ -224,13 +230,16 @@ module frame() {
        translate([-(casing_width + casing_hole_inner_width) / 4, (casing_width + casing_hole_inner_width) / 4, frame_height / 2 - frame_walls_thickness + magnet_hole_thickness - 2 * epsilon]) magnet_hole();
        translate([(casing_width + casing_hole_inner_width) / 4, -(casing_width + casing_hole_inner_width) / 4, frame_height / 2 - frame_walls_thickness + magnet_hole_thickness - 2 * epsilon]) magnet_hole();
        translate([-(casing_width + casing_hole_inner_width) / 4, -(casing_width + casing_hole_inner_width) / 4, frame_height / 2 - frame_walls_thickness + magnet_hole_thickness - 2 * epsilon]) magnet_hole();
+        
+                
+        translate([frame_hole_inner_width / 2 + frame_walls_thickness / 2, fan_wire_x / 2, - frame_walls_thickness  / 2 - epsilon]) cube([frame_walls_thickness + 2 * epsilon, fan_wire_cutting_width, frame_height - frame_walls_thickness], center= true);
     }
 }
 
 
-casing();
+// casing();
 
-translate([0,0, casing_height]) grid();
+// translate([0,0, casing_height]) grid();
 
 translate([0,0,2 * casing_height]) frame();
 
