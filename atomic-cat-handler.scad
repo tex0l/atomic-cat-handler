@@ -1,7 +1,7 @@
 $fa = 2;
 $fs= 0.2;
 
-tolerance = 0.1;
+tolerance = 0.2;
 epsilon = 0.01;
 
 /// START Diagram
@@ -52,24 +52,24 @@ grid_honeycomb_diameter = 20;
 grid_honeycomb_thickness = 2.5;
 
 // Fan
-fan_width = 140;
+fan_width = 142;
 fan_height = 27.5;
 fan_screw_spacing = 124.5;
 fan_wire_x= 107.8;
-fan_wire_cutting_width= 5;
-fan_wire_cutting_depth= 1.3;
+fan_wire_cutting_width= 6;
+fan_wire_cutting_depth= 2;
 
 // Frame
 frame_walls_thickness = 2.5;
 
 // Magnet
-magnet_diameter = 8;
+magnet_diameter = 8.1;
 magnet_thickness = 1.7;
 
 // Screw
 screw_diameter = 4;
 screw_head_thickness = 1;
-screw_head_diameter = 10;
+screw_head_diameter = 9;
 
 // Computed
 frame_height = 2 * frame_walls_thickness + fan_height + 2 * tolerance;
@@ -172,7 +172,7 @@ module casing() {
         translate([-(casing_width + casing_hole_inner_width) / 4,
         -(casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
         
-        translate([frame_hole_inner_width / 2 + casing_walls_thickness / 2, fan_wire_x / 2, casing_height / 2 + casing_walls_thickness / 2 - fan_wire_cutting_depth - tolerance]) cube([casing_width / 2, fan_wire_cutting_width, casing_walls_thickness], center= true);
+        translate([frame_hole_inner_width / 2 + casing_walls_thickness / 2, frame_hole_inner_width / 2 - fan_wire_x, casing_height / 2 + casing_walls_thickness / 2 - fan_wire_cutting_depth - tolerance]) cube([casing_width / 2, fan_wire_cutting_width, casing_walls_thickness], center= true);
     }
 }
 
@@ -180,13 +180,13 @@ module grid() {
     difference () {
         union() {
             intersection() { // making the bottom honeycomb adjusted to size
-            translate([-frame_hole_inner_width / 2, -frame_hole_inner_width/2, -frame_walls_thickness / 2]) linear_extrude(frame_walls_thickness) hex_grid(casing_honeycomb_diameter, casing_honeycomb_thickness, fan_width / casing_honeycomb_diameter * 2, frame_hole_outer_width / casing_honeycomb_diameter * 2);
-            cube([frame_hole_inner_width + 2 * frame_walls_thickness , frame_hole_inner_width + 2 * frame_walls_thickness , casing_height], center = true);
+            translate([-fan_width / 2, -fan_width/2, -frame_walls_thickness / 2]) linear_extrude(frame_walls_thickness) hex_grid(casing_honeycomb_diameter, casing_honeycomb_thickness, fan_width / casing_honeycomb_diameter * 2, frame_hole_outer_width / casing_honeycomb_diameter * 2);
+            cube([fan_width + 2 * frame_walls_thickness , fan_width + 2 * frame_walls_thickness , casing_height], center = true);
         }
         
             difference()  {  // making the circular edge around the honeycomb
-                cube([frame_hole_inner_width + 2 * frame_walls_thickness , frame_hole_inner_width + 2 * frame_walls_thickness, frame_walls_thickness], center= true);
-                translate([0,0,-frame_walls_thickness]) cylinder(h = 3 * frame_walls_thickness , r = frame_hole_inner_width / 2);
+                cube([fan_width + 2 * frame_walls_thickness , fan_width + 2 * frame_walls_thickness, frame_walls_thickness], center= true);
+                translate([0,0,-frame_walls_thickness]) cylinder(h = 3 * frame_walls_thickness , r = fan_width / 2);
             }
         }
 
@@ -232,14 +232,14 @@ module frame() {
        translate([-(casing_width + casing_hole_inner_width) / 4, -(casing_width + casing_hole_inner_width) / 4, frame_height / 2 - frame_walls_thickness + magnet_hole_thickness - 2 * epsilon]) magnet_hole();
         
                 
-        translate([frame_hole_inner_width / 2 + frame_walls_thickness / 2, fan_wire_x / 2, - frame_walls_thickness  / 2 - epsilon]) cube([frame_walls_thickness + 2 * epsilon, fan_wire_cutting_width, frame_height - frame_walls_thickness], center= true);
+        translate([frame_hole_inner_width / 2 + frame_walls_thickness / 2, frame_hole_inner_width / 2 - fan_wire_x, - frame_walls_thickness  / 2 - epsilon]) cube([frame_walls_thickness + 2 * epsilon, fan_wire_cutting_width, frame_height - frame_walls_thickness], center= true);
     }
 }
 
 
-// casing();
+casing();
 
-// translate([0,0, casing_height]) grid();
+translate([0,0, casing_height]) grid();
 
 translate([0,0,2 * casing_height]) frame();
 
