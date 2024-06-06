@@ -1,40 +1,40 @@
 $fa = 2;
 $fs= 0.2;
 
-tolerance = 0.2;
+tolerance = 0.1;
 epsilon = 0.01;
 
 /// START Diagram
-/// 
+///
 /// Frame
 /// ______ _ _ _ _ _ _ _ _ _ _ _ ______
 ///     |                        |
 ///     |                        |
 ///     |                        |
-/// 
+///
 /// Fan
 ///      ________________________
 ///     |                        |
 ///     |          FAN           |
 ///     |________________________|
-/// 
+///
 /// Grid
-/// 
+///
 ///     __ _ _ _ _ _ _ _ _ _ _ _ _
-///     
-/// 
+///
+///
 /// Filter
 ///      ________________________
 ///     |         Filter         |
 ///      ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-/// 
+///
 /// Casing
 /// _____                        ______
 ///     |                        |
 ///     |                        |
 ///     |                        |
 ///     |_ _ _ _ _ _ _ _ _ _ _ _ |
-/// 
+///
 ///  END Diagram
 
 // Casing
@@ -90,13 +90,13 @@ screw_head_hole_thickness = screw_head_thickness + 2 * tolerance;
 screw_head_hole_radius = screw_head_diameter / 2 + tolerance;
 
 module screw_head_hole() {
-    translate([0, 0, -screw_head_thickness + epsilon]) union() {
+    translate([0, 0, -screw_head_hole_thickness + epsilon]) union() {
         cylinder(h = screw_head_hole_thickness, r = screw_head_hole_radius, $fn= 100);
     }
 }
 
 module screw_hole() {
-    translate([0, 0, -screw_head_thickness + epsilon]) union() {
+    translate([0, 0, -screw_head_hole_thickness + epsilon]) union() {
         cylinder(h = screw_head_hole_thickness, r = screw_head_hole_radius, $fn= 100);
         translate([0,0,- 2 * casing_walls_thickness + screw_head_hole_thickness]) cylinder(h = 4 * casing_walls_thickness, r = screw_hole_radius, $fn= 100);
     }
@@ -104,7 +104,7 @@ module screw_hole() {
 
 module magnet_hole() {
     translate([0, 0, -magnet_hole_thickness + epsilon]) cylinder(h = magnet_hole_thickness, r = magnet_hole_radius, $fn= 100);
-} 
+}
 
 
 module hex(diameter, thickness) {
@@ -120,8 +120,8 @@ function compute_y_delta(outer_radius,inner_radius) = (outer_radius + inner_radi
 
 
 module hex_grid(diameter, thickness, rows, columns) {
-    
-    
+
+
     outer_radius = diameter / 2;
     inner_radius = outer_radius - thickness;
 
@@ -150,18 +150,18 @@ module casing() {
             difference() {
                 cube([casing_width, casing_width, casing_height], center = true);
                 translate([0, 0, -epsilon]) cube([casing_hole_inner_width, casing_hole_inner_width, 2 * casing_height], , center = true);
-                translate([0, 0, - casing_walls_thickness]) difference() {
-                    cube([casing_width + 2 * tolerance, casing_width + 2 * tolerance, casing_height], center = true);
+                translate([0, 0, - casing_walls_thickness / 2]) difference() {
+                    cube([casing_width + 2 * tolerance, casing_width + 2 * tolerance, casing_height - frame_walls_thickness + epsilon], center = true);
                     cube([casing_hole_outer_width, casing_hole_outer_width, 2 * casing_height], center = true);
                 }
             }
-            
+
             translate([0,0, -casing_height / 2 + casing_walls_thickness / 2]) union() {
                     intersection() { // making the bottom honeycomb adjusted to size
                     translate([-casing_hole_inner_width / 2, -casing_hole_inner_width/2, -casing_walls_thickness / 2]) linear_extrude(casing_walls_thickness) hex_grid(casing_honeycomb_diameter, casing_honeycomb_thickness, fan_width / casing_honeycomb_diameter * 2, casing_hole_outer_width / casing_honeycomb_diameter * 2);
                     cube([casing_hole_inner_width, casing_hole_inner_width, casing_height], center = true);
                 }
-                
+
                 difference()  {  // making the circular edge around the honeycomb
                     cube([casing_hole_inner_width + 2 * tolerance + 2 * epsilon, casing_hole_inner_width + 2 * tolerance + 2 * epsilon, casing_walls_thickness], center= true);
                     translate([0,0,-casing_walls_thickness]) cylinder(h = 3 * casing_walls_thickness , r = casing_hole_inner_width / 2 - fan_walls_thickness);
@@ -177,8 +177,8 @@ module casing() {
         translate([(casing_width + casing_hole_inner_width) / 4, -(casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
         translate([-(casing_width + casing_hole_inner_width) / 4,
         -(casing_width + casing_hole_inner_width) / 4, casing_height / 2]) magnet_hole();
-        
-        translate([frame_hole_inner_width / 2 + casing_walls_thickness / 2, frame_hole_inner_width / 2 - fan_wire_x, casing_height / 2 + casing_walls_thickness / 2 - fan_wire_cutting_depth - tolerance]) cube([casing_width / 2, fan_wire_cutting_width, casing_walls_thickness], center= true);
+
+        translate([frame_hole_inner_width / 2 + casing_walls_thickness / 2, frame_hole_inner_width / 2 - fan_wire_x, casing_height / 2 - fan_wire_cutting_depth / 2 + epsilon ]) cube([casing_width / 2, fan_wire_cutting_width, fan_wire_cutting_depth], center= true);
     }
 }
 
@@ -189,17 +189,17 @@ module grid() {
             translate([-fan_width / 2, -fan_width / 2, -frame_walls_thickness / 2]) linear_extrude(frame_walls_thickness) hex_grid(casing_honeycomb_diameter, casing_honeycomb_thickness, fan_width / casing_honeycomb_diameter * 2, frame_hole_outer_width / casing_honeycomb_diameter * 2);
             cube([fan_width + 2 * frame_walls_thickness , fan_width + 2 * frame_walls_thickness , casing_height], center = true);
         }
-        
+
             difference()  {  // making the circular edge around the honeycomb
                 cube([fan_width + 2 * frame_walls_thickness , fan_width + 2 * frame_walls_thickness, frame_walls_thickness], center= true);
                 translate([0,0,-frame_walls_thickness]) cylinder(h = 3 * frame_walls_thickness , r = fan_width / 2 - fan_walls_thickness);
             }
         }
 
-       translate([fan_screw_spacing / 2 , -fan_screw_spacing / 2, - frame_walls_thickness / 2 + screw_head_hole_thickness - 3 * tolerance]) screw_hole();
-       translate([-fan_screw_spacing / 2 , fan_screw_spacing / 2, - frame_walls_thickness / 2 + screw_head_hole_thickness - 3 * tolerance]) screw_hole();
-       translate([-fan_screw_spacing / 2 , -fan_screw_spacing / 2, - frame_walls_thickness / 2 + screw_head_hole_thickness - 3 * tolerance]) screw_hole();
-       translate([fan_screw_spacing / 2, fan_screw_spacing / 2, - frame_walls_thickness / 2 + screw_head_hole_thickness - 3 * tolerance]) screw_hole();
+       translate([fan_screw_spacing / 2 , -fan_screw_spacing / 2, - frame_walls_thickness / 2 + screw_head_hole_thickness - 2 * epsilon]) screw_hole();
+       translate([-fan_screw_spacing / 2 , fan_screw_spacing / 2, - frame_walls_thickness / 2 + screw_head_hole_thickness - 2 * epsilon]) screw_hole();
+       translate([-fan_screw_spacing / 2 , -fan_screw_spacing / 2, - frame_walls_thickness / 2 + screw_head_hole_thickness - 2 * epsilon]) screw_hole();
+       translate([fan_screw_spacing / 2, fan_screw_spacing / 2, - frame_walls_thickness / 2 + screw_head_hole_thickness - 2 * epsilon]) screw_hole();
     }
 
 }
@@ -210,18 +210,18 @@ module frame() {
             difference() {
                 cube([casing_width, casing_width, frame_height], center = true);
                 translate([0, 0, -epsilon]) cube([frame_hole_inner_width, frame_hole_inner_width, 2 * frame_height], , center = true);
-                translate([0, 0, - frame_walls_thickness]) difference() {
-                    cube([casing_width + 2 * tolerance, casing_width + 2 * tolerance, frame_height], center = true);
+                translate([0, 0, - frame_walls_thickness / 2]) difference() {
+                    cube([casing_width + 2 * tolerance, casing_width + 2 * tolerance, frame_height - frame_walls_thickness + epsilon ], center = true);
                     cube([frame_hole_outer_width, frame_hole_outer_width, 2 * frame_height], center = true);
                 }
             }
-            
+
             translate([0,0, frame_height / 2 - frame_walls_thickness / 2]) union() {
                     intersection() { // making the bottom honeycomb adjusted to size
                     translate([-frame_hole_inner_width / 2, -frame_hole_inner_width/2, -frame_walls_thickness / 2]) linear_extrude(frame_walls_thickness) hex_grid(casing_honeycomb_diameter, casing_honeycomb_thickness, fan_width / casing_honeycomb_diameter * 2, frame_hole_outer_width / casing_honeycomb_diameter * 2);
                     cube([frame_hole_inner_width, frame_hole_inner_width, casing_height], center = true);
                 }
-                
+
                 difference()  {  // making the circular edge around the honeycomb
                     cube([frame_hole_inner_width + 2 * tolerance + 2 * epsilon, frame_hole_inner_width + 2 * tolerance + 2 * epsilon, frame_walls_thickness], center= true);
                     translate([0,0,-frame_walls_thickness]) cylinder(h = 3 * frame_walls_thickness , r = frame_hole_inner_width / 2 - fan_walls_thickness);
@@ -236,13 +236,13 @@ module frame() {
        translate([-(casing_width + casing_hole_inner_width) / 4, (casing_width + casing_hole_inner_width) / 4, frame_height / 2 - frame_walls_thickness + magnet_hole_thickness - 2 * epsilon]) magnet_hole();
        translate([(casing_width + casing_hole_inner_width) / 4, -(casing_width + casing_hole_inner_width) / 4, frame_height / 2 - frame_walls_thickness + magnet_hole_thickness - 2 * epsilon]) magnet_hole();
        translate([-(casing_width + casing_hole_inner_width) / 4, -(casing_width + casing_hole_inner_width) / 4, frame_height / 2 - frame_walls_thickness + magnet_hole_thickness - 2 * epsilon]) magnet_hole();
-        
-        
+
+
         translate([(casing_width + casing_hole_inner_width) / 4  , 0, frame_height / 2 + screw_head_thickness - frame_walls_thickness - 2 * epsilon]) screw_head_hole();
         translate([-(casing_width + casing_hole_inner_width) / 4  , 0, frame_height / 2 + screw_head_thickness - frame_walls_thickness - 2 * epsilon]) screw_head_hole();
         translate([0, (casing_width + casing_hole_inner_width) / 4, frame_height / 2 + screw_head_thickness - frame_walls_thickness - 2 * epsilon]) screw_head_hole();
         translate([0, -(casing_width + casing_hole_inner_width) / 4, frame_height / 2 + screw_head_thickness - frame_walls_thickness - 2 * epsilon]) screw_head_hole();
-                
+
         translate([frame_hole_inner_width / 2 + frame_walls_thickness / 2, fan_width / 2 - fan_wire_x, - frame_walls_thickness  / 2 - epsilon]) cube([frame_walls_thickness + 2 * epsilon, fan_wire_cutting_width, frame_height - frame_walls_thickness], center= true);
     }
 }
