@@ -186,12 +186,12 @@ module grid() {
     difference () {
         union() {
             intersection() { // making the bottom honeycomb adjusted to size
-            translate([-fan_width / 2, -fan_width / 2, -frame_walls_thickness / 2]) linear_extrude(frame_walls_thickness) hex_grid(casing_honeycomb_diameter, casing_honeycomb_thickness, fan_width / casing_honeycomb_diameter * 2, frame_hole_outer_width / casing_honeycomb_diameter * 2);
+            translate([-frame_hole_inner_width / 2, -frame_hole_inner_width / 2, -frame_walls_thickness / 2]) linear_extrude(frame_walls_thickness) hex_grid(casing_honeycomb_diameter, casing_honeycomb_thickness, fan_width / casing_honeycomb_diameter * 2, frame_hole_outer_width / casing_honeycomb_diameter * 2);
             cube([fan_width + 2 * frame_walls_thickness , fan_width + 2 * frame_walls_thickness , casing_height], center = true);
         }
 
             difference()  {  // making the circular edge around the honeycomb
-                cube([fan_width + 2 * frame_walls_thickness , fan_width + 2 * frame_walls_thickness, frame_walls_thickness], center= true);
+                cube([frame_hole_outer_width , frame_hole_outer_width, frame_walls_thickness], center= true);
                 translate([0,0,-frame_walls_thickness]) cylinder(h = 3 * frame_walls_thickness , r = fan_width / 2 - fan_walls_thickness);
             }
         }
@@ -248,9 +248,9 @@ module frame() {
 }
 
 
-casing();
+// casing();
 
 translate([0,0, casing_height]) grid();
 
-translate([0,0,2 * casing_height]) frame();
+// translate([0,0,2 * casing_height]) frame();
 
