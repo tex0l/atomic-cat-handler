@@ -244,13 +244,16 @@ module frame() {
         translate([0, -(casing_width + casing_hole_inner_width) / 4, frame_height / 2 + screw_head_thickness - frame_walls_thickness - 2 * epsilon]) screw_head_hole();
 
         translate([frame_hole_inner_width / 2 + frame_walls_thickness / 2, fan_width / 2 - fan_wire_x, - frame_walls_thickness  / 2 - epsilon]) cube([frame_walls_thickness + 2 * epsilon, fan_wire_cutting_width, frame_height - frame_walls_thickness], center= true);
+        
+        translate([frame_hole_inner_width / 2 + (casing_width - frame_hole_inner_width) / 4, fan_width / 2 - fan_wire_x, frame_height / 2 + fan_wire_cutting_depth / 2 -frame_walls_thickness - epsilon ]) cube([(casing_width - frame_hole_inner_width) / 2 + 2 *epsilon, fan_wire_cutting_width, fan_wire_cutting_depth], center= true);
+
     }
 }
 
 
-// casing();
+casing();
 
 translate([0,0, casing_height]) grid();
 
-// translate([0,0,2 * casing_height]) frame();
+translate([0,0,2 * casing_height]) frame();
 
